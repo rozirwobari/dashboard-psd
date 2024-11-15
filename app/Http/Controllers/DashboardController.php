@@ -11,7 +11,10 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        //
+        $data = [
+            'title' => 'Dashboard',
+        ];
+        return view('content.dashboard', $data);
     }
 
     /**
