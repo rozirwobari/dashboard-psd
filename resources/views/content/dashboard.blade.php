@@ -68,7 +68,6 @@
             scales: {
                 y: {
                     beginAtZero: true,
-                    max: 350
                 }
             }
         }
