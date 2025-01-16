@@ -1,0 +1,94 @@
+<script>
+    const fullData = {
+        '2020': { value: 65, color: 'rgba(255, 99, 132, 0.8)', border: 'rgba(255, 99, 132, 1)' },
+        '2021': { value: 78, color: 'rgba(54, 162, 235, 0.8)', border: 'rgba(54, 162, 235, 1)' },
+        '2022': { value: 82, color: 'rgba(255, 206, 86, 0.8)', border: 'rgba(255, 206, 86, 1)' },
+        '2023': { value: 95, color: 'rgba(75, 192, 192, 0.8)', border: 'rgba(75, 192, 192, 1)' },
+        '2024': { value: 88, color: 'rgba(153, 102, 255, 0.8)', border: 'rgba(153, 102, 255, 1)' }
+    };
+    let myChart;
+
+    function updateChart() {
+        const selectedYears = Object.keys(fullData).filter(year =>
+            document.getElementById(year).checked
+        );
+
+        const data = {
+            labels: selectedYears,
+            datasets: [{
+                data: selectedYears.map(year => fullData[year].value),
+                backgroundColor: selectedYears.map(year => fullData[year].color),
+                borderColor: selectedYears.map(year => fullData[year].border),
+                borderWidth: 1
+            }]
+        };
+
+        if (myChart) {
+            myChart.destroy();
+        }
+
+        const ctx = document.getElementById('rzw-barchart').getContext('2d');
+        myChart = new Chart(ctx, {
+            type: 'bar',
+            data: data,
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Grafik Data Tahunan',
+                        font: {
+                            size: 16
+                        }
+                    },
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    }
+    document.querySelectorAll('.checkbox-item input[type="checkbox"]').forEach(checkbox => {
+        checkbox.addEventListener('change', updateChart);
+    });
+
+    // Initial chart render
+    updateChart();
+
+    // Event listener untuk select
+    document.querySelector('.form-select').addEventListener('change', function (e) {
+        const selectedYear = e.target.value; // Tahun yang dipilih
+        const yearIndex = originalData.labels.indexOf(selectedYear); // Indeks tahun
+
+        if (selectedYear === "") {
+            // Reset ke data asli jika memilih "All"
+            myBarChart.data.labels = [...originalData.labels]; // Clone labels
+            myBarChart.data.datasets.forEach((dataset, index) => {
+                dataset.data = [...originalData.datasets[index].data]; // Clone data
+            });
+        } else if (yearIndex !== -1) {
+            // Jika tahun valid
+            myBarChart.data.labels = [selectedYear, selectedYear]; // Duplikasi label untuk membentuk garis
+            myBarChart.data.datasets.forEach((dataset, index) => {
+                const value = originalData.datasets[index].data[yearIndex];
+                dataset.data = [value, value]; // Duplikasi nilai data
+            });
+        }
+
+        // Update chart
+        myBarChart.update(); // Refresh grafik
+    });
+</script>

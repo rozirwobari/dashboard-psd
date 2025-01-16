@@ -34,7 +34,7 @@
 <script>
     const ctx = document.getElementById('rzw-chart').getContext('2d');
     const originalData = {
-        labels: ['2019', '2020', '2021', '2022', '2023', '2024'], // Label untuk sumbu X
+        labels: ['2019', '2020', '2021', '2022', '2023', '2024'],
         datasets: [
             {
                 label: 'Hubungan Internasional',
