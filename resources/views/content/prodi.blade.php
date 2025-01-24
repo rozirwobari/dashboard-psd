@@ -62,7 +62,7 @@
                     <div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
                         <div class="mb-3 mb-sm-0">
                             <h5 class="card-title fw-semibold" style="text-shadow: 0px 0px 30px rgba(0, 128, 0, 0.6);">
-                                Pertumbuhan Mahasiswa</h5>
+                                Jenis Kelamin</h5>
                         </div>
                     </div>
                     <div class="container">
@@ -105,7 +105,7 @@
                     <div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
                         <div class="mb-3 mb-sm-0">
                             <h5 class="card-title fw-semibold" style="text-shadow: 0px 0px 30px rgba(0, 128, 0, 0.6);">
-                                Pertumbuhan Mahasiswa</h5>
+                                Mahasiswa Berdasarkan Pertumbuhan</h5>
                         </div>
                         <div class="d-flex flex-column">
                             <div class="d-flex gap-2 align-items-center">
@@ -136,7 +136,7 @@
                     <div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
                         <div class="mb-3 mb-sm-0">
                             <h5 class="card-title fw-semibold" style="text-shadow: 0px 0px 30px rgba(0, 128, 0, 0.6);">
-                                Pertumbuhan Mahasiswa</h5>
+                                Mahasiswa Berdasarkan Wilayah</h5>
                         </div>
                     </div>
                     {{-- <div class="container">
@@ -396,6 +396,35 @@
     });
 </script>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <script>
     var southWest = L.latLng(-11.0, 94.0);
     var northEast = L.latLng(6.0, 141.0);
@@ -436,8 +465,10 @@
     };
 
     function getColor(provinsiName) {
-        var mahasiswa = dataSiswa[provinsiName.toUpperCase()];
+        let provinsi = provinsiName.toUpperCase();
+        var mahasiswa = dataSiswa[provinsi];
         if (!mahasiswa) return "#fff";
+        
         return mahasiswa > 900000 ? '#d94801' :
         mahasiswa > 700000 ? '#f16913' :
         mahasiswa > 500000 ? '#fd8d3c' :
@@ -450,7 +481,8 @@
         let maxSiswa = 0;
         let provinsiMax = null;
         
-        Object.entries(dataSiswa).forEach(([provinsi, students]) => {
+        Object.entries(dataSiswa).forEach(([provinsi, mahasiswa]) => {
+            console.log(`hasil ${mahasiswa}`)
             if (mahasiswa > maxSiswa) {
                 maxSiswa = mahasiswa;
                 provinsiMax = provinsi;
