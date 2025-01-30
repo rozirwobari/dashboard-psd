@@ -1,6 +1,6 @@
 @extends('layout')
 
-@section('title', 'Ilmu Pemerintahan')
+@section('title', 'Ilmu Komunikasi')
 
 @section('css')
 <style>
@@ -153,6 +153,23 @@
                 </div>
             </div>
         </div>
+        <div class="col-lg-12 d-flex align-items-strech">
+            <div class="card w-100">
+                <div class="card-body shadow">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Ilmu Komunikasi - Prediction
+                            </h2>
+                        </div>
+                        <div class="card-content">
+                            <div class="chart-container">
+                                <canvas id="rzw-prediction"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 @endsection
@@ -168,33 +185,31 @@
 <script>
     Chart.register(ChartDataLabels);
 
-    var JurusanList = {!! json_encode($jurusan) !!};
+    var tahunList = {!! json_encode($tahun_range) !!};
     var range_tahun = document.querySelector('#range_tahun')
-    JurusanList.forEach(element => {
+    tahunList.forEach(element => {
         range_tahun.innerHTML += `
             <div class="checkbox-item">
-                <input type="checkbox" id="${element.label}" value="${element.label}" checked>
-                <label for="${element.name}">${element.label}</label>
+                <input type="checkbox" id="${element}" value="${element}" checked>
+                <label for="${element}">${element}</label>
             </div>
         `;
     });
     
-    const fullData = {!! json_encode($PieChart) !!};
+    const fullData = {!! json_encode($pieChart) !!};
     let myChart;
 
-    console.log(`Jurusan : ${JSON.stringify(fullData)}`)
-
     function updateChart() {
-        const selectedJurusan = Object.keys(fullData).filter(jurusan =>
-            document.getElementById(jurusan).checked
+        const selectedYears = Object.keys(fullData).filter(year =>
+            document.getElementById(year).checked
         );
 
         const data = {
-            labels: selectedJurusan,
+            labels: selectedYears,
             datasets: [{
-                data: selectedJurusan.map(jurusan => fullData[jurusan].value),
-                backgroundColor: selectedJurusan.map(jurusan => fullData[jurusan].color),
-                borderColor: selectedJurusan.map(jurusan => fullData[jurusan].border),
+                data: selectedYears.map(year => fullData[year].value),
+                backgroundColor: selectedYears.map(year => fullData[year].color),
+                borderColor: selectedYears.map(year => fullData[year].border),
                 borderWidth: 1
             }]
         };
@@ -278,7 +293,19 @@
         const ctx = document.getElementById('rzw-chart').getContext('2d');
         const originalData = {
             labels: {!! json_encode($tahun_range) !!},
-            datasets: {!! json_encode($LineChart) !!}
+            datasets: [
+                {
+                    label: 'Hubungan Internasional',
+                    data: {!! json_encode($mahasiswa_per_tahun) !!},
+                    fill: true,
+                    borderColor: '#0096eb',
+                    tension: 0.4,
+                    cubicInterpolationMode: 'monotone',
+                    pointStyle: 'circle',
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                },
+            ]
         };
 
         const startYear = document.getElementById('startYear');
@@ -362,7 +389,7 @@
     });
 </script>
 
-{{-- <script>
+<script>
     var southWest = L.latLng(-11.0, 94.0);
     var northEast = L.latLng(6.0, 141.0);
     var bounds = L.latLngBounds(southWest, northEast);
@@ -517,5 +544,84 @@
     map.on('drag', function() {
         map.panInsideBounds(bounds, { animate: false });
     });
-</script> --}}
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<script>
+    const actualData = {!! json_encode($prediction['yearly_data']) !!}
+    const futurePredictions = {!! json_encode($prediction['predictions']) !!}
+    
+    var slope = {{ $prediction['model_coefficients']['slope'] }}
+    var intercept = {{ $prediction['model_coefficients']['intercept'] }}
+
+    const years = [...actualData.map(d => d.year), ...futurePredictions.map(d => d.year)];
+    const actualStudents = actualData.map(d => d.students);
+    const predictedStudents = [
+        ...actualData.map(item => {
+            let result;
+            if (intercept >= 0) {
+                result = Math.round(slope * item.year + intercept);
+            } else {
+                result = Math.round(slope * item.year - Math.abs(intercept));
+            }
+            return result;
+        }),
+        ...futurePredictions.map(d => d.students)
+    ];
+
+    const ctx = document.getElementById('rzw-prediction').getContext('2d');
+    new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: years,
+                datasets: [
+                    {
+                        label: 'Actual Students',
+                        data: [...actualStudents, ...Array(futurePredictions.length).fill(null)],
+                        borderColor: 'rgb(136, 132, 216)',
+                        backgroundColor: 'rgb(136, 132, 216)',
+                        pointRadius: 6,
+                        tension: 0.1
+                    },
+                    {
+                        label: 'Predicted Students',
+                        data: predictedStudents,
+                        borderColor: 'rgb(130, 202, 157)',
+                        backgroundColor: 'rgb(130, 202, 157)',
+                        pointRadius: 4,
+                        tension: 0.1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Jumlah Mahasiswa'
+                        },
+                        beginAtZero: true
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Tahun'
+                        }
+                    }
+                }
+            }
+        });
+
+</script>
 @endsection

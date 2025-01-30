@@ -1,0 +1,73 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Mahasiswa;
+use App\Models\Jurusan;
+
+class Dashboard extends Controller
+{
+    public function index()
+    {
+        $jurusan = Jurusan::all();
+        $mahasiswa = Mahasiswa::all();
+        $tahun_range = Mahasiswa::selectRaw('DISTINCT YEAR(tahun_masuk) as tahun')
+                ->orderBy('tahun')
+                ->pluck('tahun')
+                ->toArray();
+        $LineChart = $this->GetLineChart($jurusan, $tahun_range);
+        $PieChart = $this->GetPieChart($jurusan);
+        
+        return view('content.dashboard', compact('jurusan', 'PieChart', 'LineChart', 'tahun_range'));
+    }
+
+    private function GetLineChart($jurusan, $tahun_range) 
+    {
+        $mahasiswa = [];
+        foreach ($jurusan as $key => $value) {
+            $datas = [];
+            foreach ($tahun_range as $keys => $values) {
+                $key = $key + 1;
+                $mhslist = Mahasiswa::where('tahun_masuk', $values)->where('jurusan', $value->id)->get();
+                $datas[] = $mhslist->count();
+            }
+            $mahasiswa[] = [
+                'label' => $value->label,
+                'data' => $datas,
+                'fill' => true,
+                'borderColor' => '#0096eb',
+                'tension' => 0.4,
+                'cubicInterpolationMode' => 'monotone',
+                'pointStyle' => 'circle',
+                'pointRadius' => 5,
+                'pointHoverRadius' => 7
+            ];
+        }
+        return $mahasiswa;
+    }
+
+
+
+    private function GetPieChart($jurusan) 
+    {
+        $colors = [
+            'rgba(255, 0, 55, 0.9)',
+            'rgba(0, 248, 12, 0.8)',
+            'rgba(54, 162, 235, 0.8)',
+            'rgba(255, 206, 86, 0.8)',
+            'rgba(75, 192, 192, 0.8)',
+            'rgba(153, 102, 255, 0.8)'
+        ];
+        $mahasiswa = [];
+        foreach ($jurusan as $key => $value) {
+            $mahasiswa[$value->label] = [
+                'label' => $value->label,
+                'value' => $value->mahasiswa->count(),
+                'color' => $colors[$key],
+                'border' => $colors[$key],
+            ];
+        }
+        return $mahasiswa;
+    }
+}

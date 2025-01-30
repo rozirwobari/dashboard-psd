@@ -34,7 +34,7 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="{{ url('/prodi/hubungan_ternasional')}}" aria-expanded="false">
+                    <a class="sidebar-link" href="{{ url('/hubungan_internasional')}}" aria-expanded="false">
                         <span>
                             <i class="ti ti-layout-dashboard"></i>
                         </span>
@@ -42,7 +42,7 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="{{ url('/prodi/ilmu_komunikasi')}}" aria-expanded="false">
+                    <a class="sidebar-link" href="{{ url('/ilmu_komunikasi')}}" aria-expanded="false">
                         <span>
                             <i class="ti ti-layout-dashboard"></i>
                         </span>
@@ -50,11 +50,20 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="{{ url('/prodi/ilmu_pemerintahan')}}" aria-expanded="false">
+                    <a class="sidebar-link" href="{{ url('/ilmu_pemerintahan')}}" aria-expanded="false">
                         <span>
                             <i class="ti ti-layout-dashboard"></i>
                         </span>
                         <span class="hide-menu">Ilmu Pemerintahan</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <form id="logout-form" action="{{ route('logout') }}" method="post">
+                        @csrf
+                    </form>
+                    <a class="sidebar-link" href="javascript:void(0)" onclick="document.getElementById('logout-form').submit()">
+                        <span><i class="ti ti-layout-dashboard"></i></span>
+                        <span class="hide-menu">Logout</span>
                     </a>
                 </li>
             </ul>
