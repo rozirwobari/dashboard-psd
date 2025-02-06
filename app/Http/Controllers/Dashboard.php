@@ -18,8 +18,9 @@ class Dashboard extends Controller
                 ->toArray();
         $LineChart = $this->GetLineChart($jurusan, $tahun_range);
         $PieChart = $this->GetPieChart($jurusan);
+        $Geo = $this->GetGeo($mahasiswa);
         
-        return view('content.dashboard', compact('jurusan', 'PieChart', 'LineChart', 'tahun_range'));
+        return view('content.dashboard', compact('jurusan', 'PieChart', 'LineChart', 'tahun_range', 'Geo'));
     }
 
     private function GetLineChart($jurusan, $tahun_range) 
@@ -76,5 +77,13 @@ class Dashboard extends Controller
             ];
         }
         return $mahasiswa;
+    }
+
+    private function GetGeo($mahasiswa) 
+    {
+        $mahasiswaPerProvinsi = $mahasiswa->groupBy(function($item) {
+            return strtoupper($item->provinsi);
+        })->map->count();
+        return $mahasiswaPerProvinsi;
     }
 }

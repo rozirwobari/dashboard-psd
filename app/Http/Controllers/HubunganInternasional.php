@@ -59,7 +59,6 @@ class HubunganInternasional extends Controller
             return strtoupper($item->provinsi);
         })->map->count();
 
-
         $prediction = Http::post($this->baseUrl . '/hubin');
         $prediction = $prediction->json();
         return view('content.hubungan_internasional.index', compact('pieChart', 'tahun_range', 'mahasiswa_per_tahun', 'mahasiswaPerProvinsi', 'prediction'));

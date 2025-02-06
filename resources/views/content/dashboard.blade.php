@@ -362,7 +362,19 @@
     });
 </script>
 
-{{-- <script>
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
     var southWest = L.latLng(-11.0, 94.0);
     var northEast = L.latLng(6.0, 141.0);
     var bounds = L.latLngBounds(southWest, northEast);
@@ -389,7 +401,7 @@
 
     CartoDB_Positron.addTo(map);
 
-    var dataSiswa = {!! json_encode($mahasiswaPerProvinsi) !!};
+    var dataSiswa = {!! json_encode($Geo) !!};
 
     var provinsi = {
         "ACEH": [4.6951, 96.7494],
@@ -517,5 +529,5 @@
     map.on('drag', function() {
         map.panInsideBounds(bounds, { animate: false });
     });
-</script> --}}
+</script>
 @endsection
