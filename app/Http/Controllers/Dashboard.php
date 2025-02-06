@@ -24,11 +24,16 @@ class Dashboard extends Controller
 
     private function GetLineChart($jurusan, $tahun_range) 
     {
+        $colors = [
+            'rgb(255, 0, 0)',
+            'rgba(0, 255, 13, 0.98)',
+            'rgb(4, 0, 255)',
+        ];
         $mahasiswa = [];
+        $number = 0;
         foreach ($jurusan as $key => $value) {
             $datas = [];
             foreach ($tahun_range as $keys => $values) {
-                $key = $key + 1;
                 $mhslist = Mahasiswa::where('tahun_masuk', $values)->where('jurusan', $value->id)->get();
                 $datas[] = $mhslist->count();
             }
@@ -36,14 +41,16 @@ class Dashboard extends Controller
                 'label' => $value->label,
                 'data' => $datas,
                 'fill' => true,
-                'borderColor' => '#0096eb',
+                'borderColor' => $colors[$number],
                 'tension' => 0.4,
                 'cubicInterpolationMode' => 'monotone',
                 'pointStyle' => 'circle',
                 'pointRadius' => 5,
                 'pointHoverRadius' => 7
             ];
+            $number++;
         }
+        // dd($jurusan);
         return $mahasiswa;
     }
 
@@ -54,7 +61,7 @@ class Dashboard extends Controller
         $colors = [
             'rgba(255, 0, 55, 0.9)',
             'rgba(0, 248, 12, 0.8)',
-            'rgba(54, 162, 235, 0.8)',
+            'rgb(4, 0, 255)',
             'rgba(255, 206, 86, 0.8)',
             'rgba(75, 192, 192, 0.8)',
             'rgba(153, 102, 255, 0.8)'

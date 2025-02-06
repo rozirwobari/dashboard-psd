@@ -298,7 +298,7 @@
                     label: 'Hubungan Internasional',
                     data: {!! json_encode($mahasiswa_per_tahun) !!},
                     fill: true,
-                    borderColor: '#0096eb',
+                    borderColor: 'rgba(0, 255, 13, 0.98)',
                     tension: 0.4,
                     cubicInterpolationMode: 'monotone',
                     pointStyle: 'circle',

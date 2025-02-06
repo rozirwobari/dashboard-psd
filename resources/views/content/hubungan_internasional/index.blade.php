@@ -310,7 +310,7 @@
                     label: 'Hubungan Internasional',
                     data: {!! json_encode($mahasiswa_per_tahun) !!},
                     fill: true,
-                    borderColor: '#0096eb',
+                    borderColor: 'rgb(255, 0, 0)',
                     tension: 0.4,
                     cubicInterpolationMode: 'monotone',
                     pointStyle: 'circle',
@@ -337,24 +337,6 @@
                         beginAtZero: true,
                     }
                 },
-                plugins: {
-                    annotation: {
-                        annotations: {
-                            arrow: {
-                                type: 'line',
-                                borderColor: '#0096eb',
-                                borderWidth: 2,
-                                label: {
-                                    enabled: true,
-                                    content: '↑',
-                                    position: 'end'
-                                },
-                                scaleID: 'y',
-                                value: 'end'
-                            }
-                        }
-                    }
-                }
             }
         });
 
