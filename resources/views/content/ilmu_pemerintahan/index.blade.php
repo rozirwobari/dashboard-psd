@@ -158,7 +158,7 @@
                 <div class="card-body shadow">
                     <div class="card">
                         <div class="card-header">
-                            <h2 class="card-title">Ilmu Pemerintahan - Prediction
+                            <h2 class="card-title">Ilmu Pemerintahan - Prediksi
                             </h2>
                         </div>
                         <div class="card-content">
@@ -546,39 +546,6 @@
     });
 </script>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <script>
     const actualData = {!! json_encode($prediction['yearly_data']) !!}
     const futurePredictions = {!! json_encode($prediction['predictions']) !!}
@@ -608,7 +575,7 @@
                 labels: years,
                 datasets: [
                     {
-                        label: 'Actual Students',
+                        label: 'Jumlah Mahasiswa',
                         data: [...actualStudents, ...Array(futurePredictions.length).fill(null)],
                         borderColor: 'rgb(136, 132, 216)',
                         backgroundColor: 'rgb(136, 132, 216)',
@@ -616,7 +583,7 @@
                         tension: 0.1
                     },
                     {
-                        label: 'Predicted Students',
+                        label: 'Prediksi',
                         data: predictedStudents,
                         borderColor: 'rgb(130, 202, 157)',
                         backgroundColor: 'rgb(130, 202, 157)',

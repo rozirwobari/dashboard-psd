@@ -59,7 +59,9 @@ class IlmuPemerintahan extends Controller
         })->map->count();
         // dd($mahasiswaPerProvinsi);
 
-        $prediction = Http::post($this->baseUrl . '/ilpem');
+        $prediction = Http::post($this->baseUrl . '/getpredict', [
+            'jurusan_id' => 3
+        ]);
         $prediction = $prediction->json();
         return view('content.ilmu_pemerintahan.index', compact('pieChart', 'tahun_range', 'mahasiswa_per_tahun', 'mahasiswaPerProvinsi', 'prediction'));
     }

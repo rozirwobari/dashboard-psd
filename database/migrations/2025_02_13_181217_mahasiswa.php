@@ -13,17 +13,20 @@ return new class extends Migration
     {
         Schema::create('mahasiswa', function (Blueprint $table) {
             $table->id();
-            $table->integer('nim');
+            $table->string('nim', 50)->unique();
             $table->string('nama', 100);
-            $table->string('tempat_lahir', 100); 
-            $table->string('jenis_kelamin', 10);
+            $table->string('tempat_lahir', 100);
+            $table->enum('jenis_kelamin', ['L', 'P'])->nullable();
             $table->text('alamat');
-            $table->string('jurusan', 100);
+            $table->foreignId('jurusan')
+                  ->default(1)
+                  ->constrained('jurusan')
+                  ->cascadeOnUpdate()
+                  ->cascadeOnDelete();
             $table->year('tahun_masuk');
             $table->string('provinsi', 100);
             $table->string('kabupaten_kota', 100);
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
+            $table->timestamps();
         });
     }
 

@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Mahasiswa;
 use App\Models\Jurusan;
+use App\Models\DataPendingModel;
+use App\Models\FilePendingModel;
+use Illuminate\Support\Facades\Http;
 
 class Dashboard extends Controller
 {
@@ -51,7 +54,6 @@ class Dashboard extends Controller
             ];
             $number++;
         }
-        // dd($jurusan);
         return $mahasiswa;
     }
 
@@ -85,5 +87,188 @@ class Dashboard extends Controller
             return strtoupper($item->provinsi);
         })->map->count();
         return $mahasiswaPerProvinsi;
+    }
+
+    public function upload() 
+    {
+        $DataPending = DataPendingModel::all();
+        $FilePending = FilePendingModel::all();
+        return view('content.upload', compact('DataPending', 'FilePending'));
+    }
+
+    public function insertData(Request $request) 
+    {
+        $this->validateRequest($request);
+        try {
+            if (!$request->hasFile('data_mahasiswa')) {
+                return $this->errorResponse('Tidak ada file yang diupload');
+            }
+            
+            $file = $request->file('data_mahasiswa');
+            
+            if (!$this->isValidCsvFile($file)) {
+                return $this->errorResponse('File harus berformat CSV');
+            }
+            
+            $fileContent = file_get_contents($file->getPathname());
+            $filenames = time() . '_' . $file->getClientOriginalName();
+            $response = Http::attach(
+                'file',
+                file_get_contents($file->getPathname()),
+                $filenames
+            )->post('http://127.0.0.1:2003/insertdata');
+
+            
+            if ($response->successful()) {
+                return $this->handleSuccessfulUpload($file, $response, $filenames);
+            }
+            
+            return $this->errorResponse('Gagal memproses file di Python API: ' . $response->body());
+
+        } catch (\Exception $e) {
+            \Log::error('File upload error: ' . $e->getMessage());
+            return $this->errorResponse('Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    private function validateRequest(Request $request)
+    {
+        return $request->validate([
+            'data_mahasiswa' => [
+                'required',
+                'file',
+                'mimetypes:text/csv,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'max:204800'
+            ]
+        ], [
+            'data_mahasiswa.required' => 'File harus diupload',
+            'data_mahasiswa.mimes' => 'File harus berformat CSV',
+            'data_mahasiswa.max' => 'Ukuran file maksimal 200MB'
+        ]);
+    }
+
+    private function isValidCsvFile($file)
+    {
+        $allowedMimeTypes = [
+            'text/csv',
+            'application/csv',
+            'text/plain'
+        ];
+        
+        return in_array($file->getMimeType(), $allowedMimeTypes);
+    }
+
+    private function sendToPythonApi($file)
+    {
+        $response = Http::attach(
+            'file',
+            file_get_contents($file->getPathname()),
+            $file->getClientOriginalName()
+        )->post('http://127.0.0.1:2003/insertdata');
+    }
+
+    private function handleSuccessfulUpload($file, $response, $fileName)
+    {
+        // Generate unique filename with timestamp
+        $path = $file->storeAs('uploads/csv', $fileName, 'public');
+
+        FilePendingModel::insert([
+            'file_name' => $fileName,
+        ]);
+
+        // Store Python response in session if needed
+        session()->flash('alert', [
+            'title' => 'Berhasil',
+            'message' => 'File berhasil diupload dan diproses',
+            'type' => 'success'
+        ]);
+
+        return back()->with('success', 'File berhasil diupload dan diproses')
+            ->with('filePath', $path);
+    }
+
+    private function errorResponse($message)
+    {
+        return back()
+            ->with('error', $message)
+            ->withInput();
+    }
+
+    public function InsertNewData()
+    {
+        try {
+            DataPendingModel::chunk(1000, function ($records) {
+                $dataToInsert = [];
+                $processedIds = [];
+                
+                foreach ($records as $data) {
+                    $idJurusan = $this->GetIdJurusan($data->jurusan);
+                    if (!$idJurusan) {
+                        continue;
+                    }
+                    
+                    $dataToInsert[] = [
+                        'nim' => $data->nim,
+                        'nama' => $data->nama,
+                        'tempat_lahir' => $data->tempat_lahir,
+                        'jenis_kelamin' => $data->jenis_kelamin,
+                        'alamat' => $data->alamat,
+                        'jurusan' => $idJurusan,
+                        'tahun_masuk' => $data->tahun_masuk,
+                        'provinsi' => $data->provinsi,
+                        'kabupaten_kota' => $data->kabupaten_kota,
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ];
+                    
+                    $processedIds[] = $data->id;
+                }
+                
+                if (!empty($dataToInsert)) {
+                    Mahasiswa::insert($dataToInsert);
+                    DataPendingModel::whereIn('id', $processedIds)->delete();
+                }
+            });
+    
+            return back()->with('alert', [
+                'title' => 'Berhasil',
+                'message' => 'Data Mahasiswa Berhasil Di Update',
+                'type' => 'success'
+            ]);
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+            ]);
+        }
+    }
+
+    public function DeleteNewData()
+    {
+        DataPendingModel::truncate();
+        // DataPendingModel::query()->delete();
+        return back()->with('alert', [
+            'title' => 'Berhasil',
+            'message' => 'Data Mahasiswa Berhasil Di Hapus Semua',
+            'type' => 'success'
+        ]);
+    }
+
+    private function GetIdJurusan($jurusan)
+    {
+        $jurusan = str_replace(' ', '_', strtolower($jurusan));
+        return Jurusan::where('name', $jurusan)->pluck('id')->first();
+    }
+    
+    public function DeleteOnceNewData(Request $request)
+    {
+        $data = DataPendingModel::findOrFail($request->id);
+        $nama = $data->name;
+        $data->delete();
+        return back()->with('alert', [
+            'title' => 'Berhasil',
+            'message' => 'Berhasil Menghapus Data '.$nama, 
+            'type' => 'success'
+        ]);
     }
 }

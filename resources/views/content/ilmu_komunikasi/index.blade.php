@@ -121,32 +121,6 @@
                                 Mahasiswa Berdasarkan Wilayah</h5>
                         </div>
                     </div>
-                    {{-- <div class="container">
-                        <div class="controls">
-                            <div class="checkbox-group">
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="2020" value="2020" checked>
-                                    <label for="2020">2020</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="2021" value="2021" checked>
-                                    <label for="2021">2021</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="2022" value="2022" checked>
-                                    <label for="2022">2022</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="2023" value="2023" checked>
-                                    <label for="2023">2023</label>
-                                </div>
-                                <div class="checkbox-item">
-                                    <input type="checkbox" id="2024" value="2024" checked>
-                                    <label for="2024">2024</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div> --}}
                     <div class="container mt-4">
                         <div id="map"></div>
                     </div>
@@ -158,7 +132,7 @@
                 <div class="card-body shadow">
                     <div class="card">
                         <div class="card-header">
-                            <h2 class="card-title">Ilmu Komunikasi - Prediction
+                            <h2 class="card-title">Ilmu Komunikasi - Prediksi
                             </h2>
                         </div>
                         <div class="card-content">
@@ -262,32 +236,6 @@
         checkbox.addEventListener('change', updateChart);
     });
     updateChart();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     document.addEventListener('DOMContentLoaded', function() {
         const ctx = document.getElementById('rzw-chart').getContext('2d');
@@ -585,7 +533,7 @@
                 labels: years,
                 datasets: [
                     {
-                        label: 'Actual Students',
+                        label: 'Jumlah Mahasiswa',
                         data: [...actualStudents, ...Array(futurePredictions.length).fill(null)],
                         borderColor: 'rgb(136, 132, 216)',
                         backgroundColor: 'rgb(136, 132, 216)',
@@ -593,7 +541,7 @@
                         tension: 0.1
                     },
                     {
-                        label: 'Predicted Students',
+                        label: 'Prediksi',
                         data: predictedStudents,
                         borderColor: 'rgb(130, 202, 157)',
                         backgroundColor: 'rgb(130, 202, 157)',

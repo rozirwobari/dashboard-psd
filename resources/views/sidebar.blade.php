@@ -58,6 +58,14 @@
                     </a>
                 </li>
                 <li class="sidebar-item">
+                    <a class="sidebar-link" href="{{ url('/upload')}}" aria-expanded="false">
+                        <span>
+                            <i class="ti ti-layout-dashboard"></i>
+                        </span>
+                        <span class="hide-menu">Tambah Data</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
                     <form id="logout-form" action="{{ route('logout') }}" method="post">
                         @csrf
                     </form>

@@ -58,7 +58,9 @@ class IlmuKomunikasi extends Controller
             return strtoupper($item->provinsi);
         })->map->count();
 
-        $prediction = Http::post($this->baseUrl . '/ilkom');
+        $prediction = Http::post($this->baseUrl . '/getpredict', [
+            'jurusan_id' => 2
+        ]);
         $prediction = $prediction->json();
         return view('content.ilmu_komunikasi.index', compact('pieChart', 'tahun_range', 'mahasiswa_per_tahun', 'mahasiswaPerProvinsi', 'prediction'));
     }
